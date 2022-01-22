@@ -1,0 +1,6 @@
+.idea
+.vscode
+cmake-build-debug
+main
+funcionarios.txt
+database.txt
