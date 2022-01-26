@@ -1,2 +1,2 @@
 id; matricula; nome; email; data_de_admissao; salario
-1; 215818121; Fulano da Silva; example@email.com; 1999-04-21; 10.0000
+1; 215818121; Fulano da Silva; example@email.com; 1999-04-21; 700.00
