@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 void adicionar_funcionario(); // átila
 void listar_funcionarios();   // marília
@@ -20,6 +21,7 @@ int main()
 
     do
     {
+        system("clear");
         printf("\n\nRH-cli\n\n");
         printf("1 - Cadastrar Funcionário\n");
         printf("0 - Sair\n");
@@ -27,15 +29,17 @@ int main()
 
         switch (acao)
         {
-        case 0:
-            printf("\nSaindo...\n");
-            return 0;
-        case 1:
-            fgets(data, BUFFER_SIZE, stdin);
-            adicionar_funcionario();
-            break;
-        default:
-            printf("Opção inválida\n");
+            case 0:
+                printf("\nSaindo...\n");
+                sleep(2);
+                system("clear");
+                return 0;
+            case 1:
+                fgets(data, BUFFER_SIZE, stdin);
+                adicionar_funcionario();
+                break;
+            default:
+                printf("Opção inválida\n");
         }
 
     } while (acao != acao + 1);
@@ -45,36 +49,53 @@ int main()
 
 void adicionar_funcionario()
 {
-    char line[BUFFER_SIZE];
+    char record[BUFFER_SIZE];
     char nome[BUFFER_SIZE];
+    char matricula[BUFFER_SIZE];
+    char email[BUFFER_SIZE];
+    char data_de_admissao[BUFFER_SIZE];
     char salario[BUFFER_SIZE];
     FILE *file;
 
-    int lastid;
+    int new_id;
     char id[BUFFER_SIZE];
 
-    lastid = last_id();
-
-    sprintf(id, "%d", lastid++);
-    strcat(line, id);
-    strcat(line, ";");
+    new_id = last_id() + 1;
+    sprintf(id, "%d", new_id);
 
     printf("Digite: Nome\n");
     fgets(nome, BUFFER_SIZE, stdin);
-    strcat(line, nome);
-    strcat(line, ";");
+    nome[strcspn(nome, "\n")] = 0;
+
+    printf("Digite: Matrícula\n");
+    fgets(matricula, BUFFER_SIZE, stdin);
+    matricula[strcspn(matricula, "\n")] = 0;
+
+    printf("Digite: Email\n");
+    fgets(email, BUFFER_SIZE, stdin);
+    email[strcspn(email, "\n")] = 0;
+
+    printf("Digite: Data de admisssão\n");
+    fgets(data_de_admissao, BUFFER_SIZE, stdin);
+    data_de_admissao[strcspn(data_de_admissao, "\n")] = 0;
 
     printf("Digite: Salario\n");
     fgets(salario, BUFFER_SIZE, stdin);
-    strcat(line, salario);
+
+    snprintf(record, BUFFER_SIZE, "%s;%s;%s;%s;%s;%s", id, matricula, nome, email, data_de_admissao, salario);
 
     file = fopen(FUNCIONARIOS_FILE, "a");
-    fputs(line, file);
+    fputs(record, file);
     fclose(file);
 
-    increment_id(lastid);
+    increment_id(new_id);
 
-    printf("Usuário criado com successo.\n");
+    printf("\nUsuário criado com successo.\n");
+    sleep(2);
+    system("clear");
+    printf("\nVoltando para o menu principal...\n");
+    sleep(1);
+
     return;
 }
 
