@@ -2,5 +2,6 @@
 .vscode
 cmake-build-debug
 main
+main.o
 funcionarios.txt
 database.txt
