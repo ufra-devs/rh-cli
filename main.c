@@ -5,7 +5,7 @@
 
 /* Funções do programa */
 void adicionar_funcionario();// átila
-char *buscar_funcionario();// átila
+void buscar_funcionario();// átila
 void listar_funcionarios();// marília
 void atualizar_funcionario();// irinaldo;
 void excluir_funcionario();// marília
@@ -30,6 +30,7 @@ int main()
         printf("-------------------------\n");
         printf("1 - Cadastrar Funcionário\n");
         printf("2 - Buscar Funcionário\n");
+        printf("3 - Listar Funcionários\n");
         printf("0 - Sair\n");
         printf("-------------------------\n");
         scanf("%d", &acao);
@@ -48,6 +49,11 @@ int main()
                 system("clear");
                 fgets(data, BUFFER_SIZE, stdin);
                 buscar_funcionario();
+                break;
+            case 3:
+                system("clear");  
+                fgets(data, BUFFER_SIZE, stdin);            
+                listar_funcionarios();
                 break;
             default:
                 system("clear");
@@ -77,8 +83,8 @@ void adicionar_funcionario()
     new_id = last_id() + 1;
     sprintf(id, "%d", new_id);
 
-    printf("Castrando funcionário\n");
-    printf("---------------------\n\n");
+    printf("Cadastrando funcionário\n");
+    printf("-----------------------\n\n");
     printf("Digite: Nome\n");
     fgets(nome, BUFFER_SIZE, stdin);
     nome[strcspn(nome, "\n")] = 0;
@@ -113,7 +119,7 @@ void adicionar_funcionario()
     sleep(1);
 }
 
-char *buscar_funcionario()
+void buscar_funcionario()
 {
     char *line_buf = NULL;
     size_t line_buf_size = 0;
@@ -140,6 +146,7 @@ char *buscar_funcionario()
     printf("--------------------\n\n");
     printf("Digite: id\n");
     fgets(id, BUFFER_SIZE, stdin);
+    
     /* remove caracteres inválidos digitado pelo usuário */
     id[strlen(id) - 1] = 0;
 
@@ -161,7 +168,7 @@ char *buscar_funcionario()
             founded = 1;
             system("clear");
             printf("Funcionário encontrado\n");
-            printf("------------------------\n\n");
+            printf("--------------------------\n\n");
 
             /* Obtém os campos registro */
             char *token = strtok(record, ";");
@@ -175,7 +182,7 @@ char *buscar_funcionario()
                 i++;
             }
 
-            printf("------------------------\n\n");
+            printf("--------------------------\n\n");
             /* interrompe o bloco de repetição se o registro porque o foi encontrado */
             break;
         }
@@ -201,8 +208,56 @@ char *buscar_funcionario()
 
     printf("Enter para voltar\n");
     fgets(id, BUFFER_SIZE, stdin);
+}
 
-    return EXIT_SUCCESS;
+void listar_funcionarios()
+{
+    char stop[1];
+    FILE* file;
+    file = fopen(FUNCIONARIOS_FILE, "r");
+
+    char header[6][20] = {
+            { "ID" },
+            { "MATRÍCULA" },
+            { "NOME" },
+            { "EMAIL" },
+            { "DATA DE ADMISSÃO" },
+            { "SALÁRIO" }
+    };
+    
+
+    char linha[BUFFER_SIZE];
+
+    printf("Listagem de funcionários\n\n");
+    
+    int i = 0;
+    while (fgets(linha, BUFFER_SIZE, file))
+    {   
+      if(i != 0) {
+        linha[strcspn(linha, "\n")] = 0;     
+
+        printf("--------------------------\n");
+        /* Obtém os campos registro */
+        char *campo = strtok(linha, ";");
+
+        /* Faz a impresão dos campos do funcionário encontrado */
+        int n = 0;
+        while (campo != NULL)
+        {
+            printf("%s: %s\n", header[n], campo);
+            campo = strtok(NULL, ";");
+            n++;
+        }       
+      }
+        
+      i++;
+    }
+
+    fclose(file);
+
+    printf("----------------------\n\n");
+    printf("Enter para voltar\n");
+    fgets(stop, BUFFER_SIZE, stdin);
 }
 
 int last_id()
