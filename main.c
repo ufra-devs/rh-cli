@@ -31,6 +31,7 @@ int main()
         printf("1 - Cadastrar Funcionário\n");
         printf("2 - Buscar Funcionário\n");
         printf("3 - Listar Funcionários\n");
+        printf("4 - Excluir Funcionário\n");
         printf("0 - Sair\n");
         printf("-------------------------\n");
         scanf("%d", &acao);
@@ -55,6 +56,11 @@ int main()
                 fgets(data, BUFFER_SIZE, stdin);            
                 listar_funcionarios();
                 break;
+            case 4:
+                system("clear");
+                fgets(data, BUFFER_SIZE, stdin);
+                excluir_funcionario();
+                break;    
             default:
                 system("clear");
                 printf("Opção inválida\n");
@@ -258,6 +264,14 @@ void listar_funcionarios()
     printf("----------------------\n\n");
     printf("Enter para voltar\n");
     fgets(stop, BUFFER_SIZE, stdin);
+}
+
+void excluir_funcionario()
+{
+  char stop[1];
+  printf("----------------------\n\n");
+  printf("Enter para voltar\n");
+  fgets(stop, BUFFER_SIZE, stdin);
 }
 
 int last_id()
