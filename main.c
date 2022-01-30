@@ -173,7 +173,7 @@ void buscar_funcionario()
       founded = 1;
       system("clear");
       printf("Funcionário encontrado\n");
-      printf("--------------------------\n\n");
+      printf("--------------------------\n");
 
       /* Obtém os campos registro */
       char *token = strtok(record, ";");
@@ -231,7 +231,7 @@ void listar_funcionarios()
     { "SALÁRIO" }
   };
 
-  printf("Listagem de funcionários\n\n");
+  printf("Listagem de funcionários\n");
   
   int i = 0;
   while (fgets(linha, BUFFER_SIZE, file))
@@ -266,7 +266,8 @@ void listar_funcionarios()
 void excluir_funcionario()
 {
   char stop[1];
-  printf("----------------------\n\n");
+  printf("Excluir funcionário\n");
+  printf("-------------------\n\n");
   printf("Enter para voltar\n");
   fgets(stop, BUFFER_SIZE, stdin);
 }
