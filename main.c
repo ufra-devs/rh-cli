@@ -53,7 +53,8 @@ int main()
         break;
       case 3:
         system("clear");  
-        fgets(data, BUFFER_SIZE, stdin);        listar_funcionarios();
+        fgets(data, BUFFER_SIZE, stdin);        
+        listar_funcionarios();
         break;
       case 4:
         system("clear");
@@ -144,30 +145,20 @@ void buscar_funcionario()
     { "SALÁRIO" }
   };
 
-  /* obtém todas as linhas do arquivo */
   line_size = getline(&line_buf, &line_buf_size, file);
 
   printf("Buscando funcionário\n");
   printf("--------------------\n\n");
   printf("Digite: id\n");
   fgets(id, BUFFER_SIZE, stdin);
-  
-  /* remove caracteres inválidos digitado pelo usuário */
   id[strlen(id) - 1] = 0;
 
-  /* percorre as linhas do arquivo */
   while (line_size >= 0)
   {
-    /* incrementada o contador de linhas */
     line_count++;
-
-    /* copia o valor da linha para o registro */
     strcpy(record, line_buf);
-
-    /* obtém o id do resgistro corrente */
     record_id = strtok(line_buf, ";");
 
-    /* verifica se o id fornecido é igual ao item corrente do loop */
     if (strcmp(id, record_id) == 0)
     {
       founded = 1;
@@ -175,11 +166,9 @@ void buscar_funcionario()
       printf("Funcionário encontrado\n");
       printf("--------------------------\n");
 
-      /* Obtém os campos registro */
       char *token = strtok(record, ";");
-
-      /* Faz a impresão dos campos do funcionário encontrado */
       int i = 0;
+
       while (token != NULL)
       {
         printf("%s: %s\n", header[i], token);
@@ -188,22 +177,16 @@ void buscar_funcionario()
       }
 
       printf("--------------------------\n\n");
-      /* interrompe o bloco de repetição se o registro porque o foi encontrado */
       break;
     }
 
-    /* obtém a próxima linha */
     line_size = getline(&line_buf, &line_buf_size, file);
   }
 
-  /* libera buffer */
   free(line_buf);
   line_buf = NULL;
+   fclose(file);
 
-  /* fecha arquivo */
-  fclose(file);
-
-  /* verifica se o registro não foi encontrado */
   if (founded == 0)
   {
     system("clear");
@@ -237,22 +220,20 @@ void listar_funcionarios()
   while (fgets(linha, BUFFER_SIZE, file))
   {   
     if(i != 0) {
-      linha[strcspn(linha, "\n")] = 0;     
+      linha[strcspn(linha, "\n")] = 0;    
 
       printf("--------------------------\n");
-      /* Obtém os campos registro */
-      char *campo = strtok(linha, ";");
 
-      /* Faz a impresão dos campos do funcionário encontrado */
+      char *campo = strtok(linha, ";");
       int n = 0;
+      
       while (campo != NULL)
       {
         printf("%s: %s\n", header[n], campo);
         campo = strtok(NULL, ";");
         n++;
       }       
-    }
-      
+    }      
     i++;
   }
 
@@ -265,11 +246,116 @@ void listar_funcionarios()
 
 void excluir_funcionario()
 {
+  char *line_buf = NULL;
   char stop[1];
+  size_t line_buf_size = 0;
+  char confirmar[BUFFER_SIZE] = "0";
+  int line_count = 0;
+  ssize_t line_size;
+  FILE *file = fopen(FUNCIONARIOS_FILE, "r");
+  FILE *file_new = fopen(FUNCIONARIOS_FILE, "r");
+  FILE *fTemp = fopen("replace.tmp", "w");
+  char id[BUFFER_SIZE];
+  char *record_id = NULL;
+  char record[BUFFER_SIZE];
+  int founded = 0;
+  char header[6][20] = {
+    { "ID" },
+    { "MATRÍCULA" },
+    { "NOME" },
+    { "EMAIL" },
+    { "DATA DE ADMISSÃO" },
+    { "SALÁRIO" }
+  };
+
+  line_size = getline(&line_buf, &line_buf_size, file);
+
   printf("Excluir funcionário\n");
-  printf("-------------------\n\n");
-  printf("Enter para voltar\n");
-  fgets(stop, BUFFER_SIZE, stdin);
+  printf("--------------------\n\n");
+  printf("Digite: id\n");
+  fgets(id, BUFFER_SIZE, stdin);  
+  id[strlen(id) - 1] = 0;
+
+  while (line_size >= 0)
+  {
+    line_count++;
+
+    strcpy(record, line_buf);
+    record_id = strtok(line_buf, ";");
+
+    if (strcmp(id, record_id) == 0)
+    {
+      founded = 1;
+      system("clear");
+      printf("Você realmente deseja excluir esse funcionário ?\n");
+      printf("----------------------------------------------\n");
+
+      char *token = strtok(record, ";");
+
+      int i = 0;
+      while (token != NULL)
+      {
+        printf("%s: %s\n", header[i], token);
+        token = strtok(NULL, ";");
+        i++;
+      }
+
+      printf("--------------------------\n");
+      break;
+    }
+
+    line_size = getline(&line_buf, &line_buf_size, file);
+  }
+
+  if (founded == 0)
+  {
+    system("clear");
+    printf("\n404 - Funcionário não encontrado\n");
+    printf("---------------------------------\n\n");
+    printf("Enter para voltar\n");
+    fgets(stop, BUFFER_SIZE, stdin);
+  } 
+    else 
+  {
+    printf("Digite 1 para confirmar ou 0 para cancelar\n");
+    fgets(confirmar, BUFFER_SIZE, stdin);
+    confirmar[strlen(confirmar) - 1] = 0;
+
+    if (strcmp(confirmar, "1") == 0) {
+      printf("Excluindo funcionário\n");
+      printf("---------------------\n\n");
+      sleep(1);      
+      line_size = 0;
+      line_count = 0;
+      line_size = getline(&line_buf, &line_buf_size, file_new);
+      
+      while (line_size >= 0)
+      {
+        line_count++; 
+
+        strcpy(record, line_buf);
+
+        record_id = strtok(line_buf, ";");   
+      
+        if (strcmp(id, record_id) != 0)
+        {        
+          fputs(record, fTemp);         
+        }
+
+        line_size = getline(&line_buf, &line_buf_size, file_new);
+      }
+
+      fclose(fTemp);      
+      remove(FUNCIONARIOS_FILE);
+      rename("replace.tmp", FUNCIONARIOS_FILE);
+      printf("Funcionário excluído con sucesso!\n");
+      sleep(2);
+    }
+
+    free(line_buf);
+    line_buf = NULL;
+    fclose(file);
+  }
 }
 
 int last_id()
@@ -285,7 +371,7 @@ int last_id()
 
   if (id == 0)
   {
-      id = 1;
+    id = 1;
   }
 
   return id;
