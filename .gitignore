@@ -5,3 +5,4 @@ main
 main.o
 funcionarios.txt
 database.txt
+.breakpoints

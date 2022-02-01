@@ -192,7 +192,7 @@ void buscar_funcionario()
 
   free(line_buf);
   line_buf = NULL;
-   fclose(file);
+  fclose(file);
 
   if (founded == 0)
   {
@@ -253,19 +253,15 @@ void listar_funcionarios()
 
 void atualizar_funcionario()
 { 
-  char data[BUFFER_SIZE];
-  int acao;
-  void alterar_nome();
-  void alterar_matricula();
-  void alterar_email();
-  void alterar_data_de_admissao();
-  void alterar_salario();
-  void menu_Principal();
   char *line_buf = NULL;
+  char stop[1];
   size_t line_buf_size = 0;
+  char confirmar[BUFFER_SIZE] = "0";
   int line_count = 0;
   ssize_t line_size;
   FILE *file = fopen(FUNCIONARIOS_FILE, "r");
+  FILE *file_new = fopen(FUNCIONARIOS_FILE, "r");
+  FILE *fTemp = fopen("replace.tmp", "w");
   char id[BUFFER_SIZE];
   char *record_id = NULL;
   char record[BUFFER_SIZE];
@@ -276,262 +272,126 @@ void atualizar_funcionario()
     { "NOME" },
     { "EMAIL" },
     { "DATA DE ADMISSÃO" },
-    { "SALÁRIO" }
+    { "SALARIO" }
   };
+  char nome[BUFFER_SIZE];
+  char matricula[BUFFER_SIZE];
+  char email[BUFFER_SIZE];
+  char data_de_admissao[BUFFER_SIZE];
+  char salario[BUFFER_SIZE];
 
   line_size = getline(&line_buf, &line_buf_size, file);
 
-  printf("Buscando funcionário\n");
+  printf("Buscar funcionário para editar\n");
   printf("--------------------\n\n");
   printf("Digite: id\n");
-  fgets(id, BUFFER_SIZE, stdin);
+  fgets(id, BUFFER_SIZE, stdin);  
   id[strlen(id) - 1] = 0;
 
   while (line_size >= 0)
   {
     line_count++;
+
     strcpy(record, line_buf);
     record_id = strtok(line_buf, ";");
 
     if (strcmp(id, record_id) == 0)
     {
-      founded = 1;
-      system("clear");
-      printf("Funcionário encontrado\n");
-      printf("--------------------------\n");
-
-      char *token = strtok(record, ";");
-      int i = 0;
-
-      while (token != NULL)
-      {
-        printf("%s: %s\n", header[i], token);
-        token = strtok(NULL, ";");
-        i++;
-      }
-
-      printf("--------------------------\n\n");
-      break;
+      founded = 1;    
     }
 
     line_size = getline(&line_buf, &line_buf_size, file);
   }
-
-  free(line_buf);
-  line_buf = NULL;
-  fclose(file);
 
   if (founded == 0)
   {
     system("clear");
     printf("\n404 - Funcionário não encontrado\n");
     printf("---------------------------------\n\n");
-  }
-
-  do {
-    printf("\n");
-    printf ("\t\t\tO QUE VOCE DESEJA ALTERAR?\n");
-    printf ("\t\t\t===============================\n");
-    printf ("\t\t\t|\t                           |\n");
-    printf("\t\t\t|  1 - Alterar Nome            |\n");
-    printf("\t\t\t|  2 - Alterar Matrícula       |\n");
-    printf("\t\t\t|  3 - Alterar E-mail          |\n");
-    printf("\t\t\t|  4 - Alterar Data de Admissão|\n");
-    printf("\t\t\t|  5 - Alterar Salario         |\n");
-    printf("\t\t\t|  6 - Menu Principal          |\n");
-    printf("\t\t\t|  0 - Sair                    |\n");
-    printf ("\t\t\t|                              |\n");
-    printf ("\t\t\t===============================\n");
-    printf ("\n\n");
-    printf("\t\t\tPor favor, selecione uma opcao: ");
-    fflush(stdin);
-    scanf("%d", &acao);
-    system("cls");
-    switch(acao)
-    { 
-    case 0:
-      system("clear");
-      exit(EXIT_SUCCESS);
-    case 1:
-      system("clear");
-      fgets(data, BUFFER_SIZE, stdin);
-      alterar_nome();
-      break;
-    case 2:
-      system("clear");
-      fgets(data, BUFFER_SIZE, stdin);
-      alterar_matricula();
-      break;
-    case 3:
-      system("clear");
-      fgets(data, BUFFER_SIZE, stdin);
-      alterar_email();
-      break;
-    case 4:
-      system("clear");
-      fgets(data, BUFFER_SIZE, stdin);
-      alterar_data_de_admissao();
-      break;
-    case 5:
-      system("clear");
-      fgets(data, BUFFER_SIZE, stdin);
-      alterar_salario();
-      break;   
-    case 6:
-      system("clear");
-      fgets(data, BUFFER_SIZE, stdin);
-      menu_Principal();
-      break;    
-    default:
-      system("clear");
-      printf("Opção inválida\n");
-      printf("--------------\n");
-      printf("Voltando...\n");
-      sleep(1);
-    }
-  }
-  while(acao != 0);
-  system("cls");
-}
-
-void alterar_nome()
-{
-  char matricula[BUFFER_SIZE];
-  int i;
-  char nome[BUFFER_SIZE];
-  char novo_nome[BUFFER_SIZE];
-
-  printf ("Digite o Novo Nome: ");
-  fgets(novo_nome,BUFFER_SIZE, stdin);
-
-  for (i=0; i < BUFFER_SIZE; i++)
+    printf("Enter para voltar\n");
+    fgets(stop, BUFFER_SIZE, stdin);
+  } 
+    else 
   {
-    if(strcmp(matricula,"\n" ) == 0)
+    system("clear");
+    printf("Editando funcionário\n");
+    printf("---------------------\n\n");
+    line_size = 0;
+    line_count = 0;
+    line_size = getline(&line_buf, &line_buf_size, file_new);
+    
+    while (line_size >= 0)
     {
-      strcpy(nome, novo_nome);
-      break;
-    }
+      line_count++; 
+      
+      strcpy(record, "");
+
+      strcpy(record, line_buf);
+
+      record_id = strtok(line_buf, ";");   
+    
+      if (strcmp(id, record_id) == 0)
+      {  
+        char *token = strtok(record, ";");
+        int i = 0;
+
+        while (token != NULL)
+        {          
+          if(strcmp(header[i], "NOME") == 0) {
+            printf("Edite o %s:\n", header[i]);
+            fgets(nome, BUFFER_SIZE, stdin);
+            nome[strcspn(nome, "\n")] = 0;
+          } 
+
+          if(strcmp(header[i], "MATRÍCULA") == 0) {
+            printf("Edite o %s:\n", header[i]);
+            fgets(matricula, BUFFER_SIZE, stdin);
+            matricula[strcspn(matricula, "\n")] = 0;
+          }
+
+          if(strcmp(header[i], "EMAIL") == 0) {
+            printf("Edite o %s:\n", header[i]);
+            fgets(email, BUFFER_SIZE, stdin);
+            email[strcspn(email, "\n")] = 0;
+          } 
+
+          if(strcmp(header[i], "DATA DE ADMISSÃO") == 0) {
+            printf("Edite o %s:\n", header[i]);
+            fgets(data_de_admissao, BUFFER_SIZE, stdin);
+            data_de_admissao[strcspn(data_de_admissao, "\n")] = 0;
+          } 
+
+          if(strcmp(header[i], "SALARIO") == 0) {
+            printf("Edite o %s:\n", header[i]);
+            fgets(salario, BUFFER_SIZE, stdin);            
+          }       
+        
+          token = strtok(NULL, ";");
+          i++;
+
+          snprintf(record, BUFFER_SIZE, "%s;%s;%s;%s;%s;%s", id, matricula, nome, email, data_de_admissao, salario);
+        }       
+      }  
+
+      fputs(record, fTemp);  
+
+      line_size = getline(&line_buf, &line_buf_size, file_new);
+    }    
+
+    fclose(fTemp);      
+    remove(FUNCIONARIOS_FILE);
+    rename("replace.tmp", FUNCIONARIOS_FILE);
+   
+    free(line_buf);
+    line_buf = NULL;
+    fclose(file);
+
+    printf("Funcionário editado con sucesso!\n");
+    sleep(4);
+    printf("----------------------\n\n");
+    printf("Enter para voltar\n");
+    fgets(stop, BUFFER_SIZE, stdin);
   }
-
-  printf("\nNome Atualizado com Successo.\n");
-  sleep(2);
-  system("clear");
-  printf("\nVoltando...\n");
-  sleep(1);
-  system("clear");
-}
-
-void alterar_matricula()
-{   
-  char matricula[BUFFER_SIZE];
-  char nova_matricula[BUFFER_SIZE];
-  int i;
-  
-  printf ("Digite a Nova Matricula: ");
-  fgets(nova_matricula, BUFFER_SIZE, stdin);
-
-  for (i=0; i < BUFFER_SIZE; i++)
-  {
-    if(strcmp(matricula,"\n") == 0)
-    {
-      strcpy(matricula, nova_matricula);
-      break;
-    }
-  }
-
-  printf("\nMatricula Atualizada com Successo.\n");
-  sleep(2);
-  system("clear");
-  printf("\nVoltando...\n");
-  sleep(1);
-  system("clear");
-}
-
-void alterar_email()
-{   
-  char matricula[BUFFER_SIZE];
-  char email[BUFFER_SIZE];
-  char novo_email[BUFFER_SIZE];
-  int i;
-
-  printf ("Digite o Novo E-mail: ");
-  fgets(novo_email, BUFFER_SIZE, stdin);
-
-  for (i=0; i < BUFFER_SIZE; i++)
-  {
-    if(strcmp(matricula,"\n") == 0)
-    {
-      strcpy(email, novo_email);
-      break;
-    }
-  }
-
-  printf("\nE-mail Atualizado com Successo.\n");
-  sleep(2);
-  system("clear");
-  printf("\nVoltando...\n");
-  sleep(1);
-  system("clear");
-}
-
-void alterar_data_de_admissao()
-{   
-  char matricula[BUFFER_SIZE];
-  char data_de_admissao[BUFFER_SIZE];
-  char nova_data_de_admissao[BUFFER_SIZE];
-  int i;
-  
-  printf ("Digite a Nova_Data_de_Admissao: ");
-  fgets(nova_data_de_admissao, BUFFER_SIZE, stdin);
-
-  for (i=0; i < BUFFER_SIZE; i++)
-  {
-    if(strcmp(matricula,"\n") == 0)
-    {
-      strcpy(data_de_admissao, nova_data_de_admissao);
-      break;
-    }
-  }
-
-  printf("\nData de Admissão Atualizada com Successo.\n");
-  sleep(2);
-  system("clear");
-  printf("\nVoltando...\n");
-  sleep(1);
-  system("clear");
-}
-void alterar_salario()
-{   
-  char matricula[BUFFER_SIZE];
-  char salario[BUFFER_SIZE];
-  char novo_salario[BUFFER_SIZE];
-  int i;
-  
-  printf ("Digite o Novo_Salario: ");
-  fgets(novo_salario, BUFFER_SIZE, stdin);
-
-  for (i=0; i < BUFFER_SIZE; i++)
-  {
-    if(strcmp(matricula,"\n") == 0)
-    {
-      strcpy(salario, novo_salario);
-      break;
-    }
-  }
-
-  printf("\nSalario Atualizado com Successo.\n");
-  sleep(2);
-  system("clear");
-  printf("\nVoltando...\n");
-  sleep(1);
-  system("clear");
-}
-
-void menu_Principal()
-{
-  system("clear");
-  printf("\nVoltando para o menu principal...\n");
-  sleep(1);main();    
 }
 
 void excluir_funcionario()
